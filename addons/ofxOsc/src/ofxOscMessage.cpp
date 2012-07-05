@@ -1,25 +1,33 @@
 /*
 
- Copyright 2007, 2008 Damian Stewart damian@frey.co.nz
- Distributed under the terms of the GNU Lesser General Public License v3
-
- This file is part of the ofxOsc openFrameworks OSC addon.
-
- ofxOsc is free software: you can redistribute it and/or modify
- it under the terms of the GNU Lesser General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- ofxOsc is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public License
- along with ofxOsc.  If not, see <http://www.gnu.org/licenses/>.
+ Copyright (c) 2007-2009, Damian Stewart
+ All rights reserved.
+ 
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+ * Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+ * Neither the name of the developer nor the
+   names of its contributors may be used to endorse or promote products
+   derived from this software without specific prior written permission.
+ 
+ THIS SOFTWARE IS PROVIDED BY DAMIAN STEWART ''AS IS'' AND ANY
+ EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED. IN NO EVENT SHALL DAMIAN STEWART BE LIABLE FOR ANY
+ DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include "ofxOscMessage.h"
+#include "ofLog.h"
 #include <iostream>
 #include <assert.h>
 
@@ -56,7 +64,7 @@ ofxOscArgType ofxOscMessage::getArgType( int index ) const
 {
     if ( index >= (int)args.size() )
     {
-        fprintf(stderr,"ofxOscMessage::getArgType: index %d out of bounds\n", index );
+    	ofLog(OF_LOG_ERROR,"ofxOscMessage::getArgType: index %d out of bounds", index );
         return OFXOSC_TYPE_INDEXOUTOFBOUNDS;
     }
     else
@@ -67,7 +75,7 @@ string ofxOscMessage::getArgTypeName( int index ) const
 {
     if ( index >= (int)args.size() )
     {
-        fprintf(stderr,"ofxOscMessage::getArgTypeName: index %d out of bounds\n", index );
+    	ofLog(OF_LOG_ERROR,"ofxOscMessage::getArgTypeName: index %d out of bounds", index );
         return "INDEX OUT OF BOUNDS";
     }
     else
@@ -81,17 +89,36 @@ int32_t ofxOscMessage::getArgAsInt32( int index ) const
 	{
 	    if ( getArgType( index ) == OFXOSC_TYPE_FLOAT )
         {
-            fprintf(stderr, "ofxOscMessage:getArgAsInt32: warning: converting int32 to float for argument %i\n", index );
-            return (int32_t)((ofxOscArgFloat*)args[index])->get();
+	    	ofLog(OF_LOG_WARNING, "ofxOscMessage:getArgAsInt32: converting int32 to float for argument %i", index );
+            return ((ofxOscArgFloat*)args[index])->get();
         }
         else
         {
-            fprintf(stderr, "ofxOscMessage:getArgAsInt32: error: argument %i is not a number\n", index );
+        	ofLog(OF_LOG_ERROR, "ofxOscMessage:getArgAsInt32: argument %i is not a number", index );
             return 0;
         }
 	}
 	else
         return ((ofxOscArgInt32*)args[index])->get();
+}
+
+uint64_t ofxOscMessage::getArgAsInt64( int index ) const
+{
+	if ( getArgType(index) != OFXOSC_TYPE_INT64 )
+	{
+	    if ( getArgType( index ) == OFXOSC_TYPE_FLOAT )
+        {
+	    	ofLog(OF_LOG_WARNING, "ofxOscMessage:getArgAsInt64: converting int64 to float for argument %i", index );
+            return ((ofxOscArgFloat*)args[index])->get();
+        }
+        else
+        {
+        	ofLog(OF_LOG_ERROR, "ofxOscMessage:getArgAsInt64: argument %i is not a number", index );
+            return 0;
+        }
+	}
+	else
+        return ((ofxOscArgInt64*)args[index])->get();
 }
 
 
@@ -101,18 +128,39 @@ float ofxOscMessage::getArgAsFloat( int index ) const
 	{
 	    if ( getArgType( index ) == OFXOSC_TYPE_INT32 )
         {
-            fprintf(stderr, "ofxOscMessage:getArgAsFloat: warning: converting float to int32 for argument %i\n", index );
-            return (int32_t)((ofxOscArgInt32*)args[index])->get();
+	    	ofLog(OF_LOG_WARNING, "ofxOscMessage:getArgAsFloat: converting float to int32 for argument %i", index );
+            return ((ofxOscArgInt32*)args[index])->get();
         }
         else
         {
-            fprintf(stderr, "ofxOscMessage:getArgAsFloat: error: argument %i is not a number\n", index );
+        	ofLog(OF_LOG_ERROR, "ofxOscMessage:getArgAsFloat: argument %i is not a number", index );
             return 0;
         }
 	}
 	else
         return ((ofxOscArgFloat*)args[index])->get();
 }
+
+
+double ofxOscMessage::getArgAsDouble( int index ) const
+{
+	if ( getArgType(index) != OFXOSC_TYPE_DOUBLE )
+	{
+	    if ( getArgType( index ) == OFXOSC_TYPE_INT32 )
+        {
+	    	ofLog(OF_LOG_WARNING, "ofxOscMessage:getArgAsFloat: converting float to int32 for argument %i", index );
+            return ((ofxOscArgInt32*)args[index])->get();
+        }
+        else
+        {
+        	ofLog(OF_LOG_ERROR, "ofxOscMessage:getArgAsFloat: argument %i is not a number", index );
+            return 0;
+        }
+	}
+	else
+        return ((ofxOscArgDouble*)args[index])->get();
+}
+
 
 
 string ofxOscMessage::getArgAsString( int index ) const
@@ -123,19 +171,19 @@ string ofxOscMessage::getArgAsString( int index ) const
         {
             char buf[1024];
             sprintf(buf,"%f",((ofxOscArgFloat*)args[index])->get() );
-            fprintf(stderr, "ofxOscMessage:getArgAsString: warning: converting float to string for argument %i\n", index );
+            ofLog(OF_LOG_WARNING, "ofxOscMessage:getArgAsString: converting float to string for argument %i", index );
             return buf;
         }
 	    else if ( getArgType( index ) == OFXOSC_TYPE_INT32 )
         {
             char buf[1024];
             sprintf(buf,"%i",((ofxOscArgInt32*)args[index])->get() );
-            fprintf(stderr, "ofxOscMessage:getArgAsString: warning: converting int32 to string for argument %i\n", index );
+            ofLog(OF_LOG_WARNING, "ofxOscMessage:getArgAsString: converting int32 to string for argument %i", index );
             return buf;
         }
         else
         {
-            fprintf(stderr, "ofxOscMessage:getArgAsString: error: argument %i is not a string\n", index );
+        	ofLog(OF_LOG_ERROR, "ofxOscMessage:getArgAsString: argument %i is not a string", index );
             return "";
         }
 	}
@@ -158,6 +206,13 @@ void ofxOscMessage::addIntArg( int32_t argument )
 	args.push_back( new ofxOscArgInt32( argument ) );
 }
 
+void ofxOscMessage::addInt64Arg( uint64_t argument )
+{
+
+	args.push_back( new ofxOscArgInt64( argument ) );
+}
+
+
 void ofxOscMessage::addFloatArg( float argument )
 {
 	args.push_back( new ofxOscArgFloat( argument ) );
@@ -166,6 +221,10 @@ void ofxOscMessage::addFloatArg( float argument )
 void ofxOscMessage::addStringArg( string argument )
 {
 	args.push_back( new ofxOscArgString( argument ) );
+}
+void ofxOscMessage::addDoubleArg( double argument )
+{
+	args.push_back( new ofxOscArgDouble( argument ) );
 }
 
 
@@ -177,6 +236,7 @@ void ofxOscMessage::addStringArg( string argument )
 
 ofxOscMessage& ofxOscMessage::copy( const ofxOscMessage& other )
 {
+	clear();
 	// copy address
 	address = other.address;
 
@@ -189,8 +249,12 @@ ofxOscMessage& ofxOscMessage::copy( const ofxOscMessage& other )
 		ofxOscArgType argType = other.getArgType( i );
 		if ( argType == OFXOSC_TYPE_INT32 )
 			args.push_back( new ofxOscArgInt32( other.getArgAsInt32( i ) ) );
+		else if ( argType == OFXOSC_TYPE_INT64 )
+			args.push_back( new ofxOscArgInt64( other.getArgAsInt64( i ) ) );
 		else if ( argType == OFXOSC_TYPE_FLOAT )
 			args.push_back( new ofxOscArgFloat( other.getArgAsFloat( i ) ) );
+		else if ( argType == OFXOSC_TYPE_DOUBLE )
+			args.push_back( new ofxOscArgDouble( other.getArgAsDouble( i ) ) );
 		else if ( argType == OFXOSC_TYPE_STRING )
 			args.push_back( new ofxOscArgString( other.getArgAsString( i ) ) );
 		else

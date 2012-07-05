@@ -1,38 +1,47 @@
 /*
-
- Copyright 2007, 2008 Damian Stewart damian@frey.co.nz
- Distributed under the terms of the GNU Lesser General Public License v3
-
- This file is part of the ofxOsc openFrameworks OSC addon.
-
- ofxOsc is free software: you can redistribute it and/or modify
- it under the terms of the GNU Lesser General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- ofxOsc is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public License
- along with ofxOsc.  If not, see <http://www.gnu.org/licenses/>.
+ 
+ Copyright (c) 2007-2009, Damian Stewart
+ All rights reserved.
+ 
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+ * Redistributions of source code must retain the above copyright
+ notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright
+ notice, this list of conditions and the following disclaimer in the
+ documentation and/or other materials provided with the distribution.
+ * Neither the name of the developer nor the
+ names of its contributors may be used to endorse or promote products
+ derived from this software without specific prior written permission.
+ 
+ THIS SOFTWARE IS PROVIDED BY DAMIAN STEWART ''AS IS'' AND ANY
+ EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED. IN NO EVENT SHALL DAMIAN STEWART BE LIABLE FOR ANY
+ DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #ifndef _OFXOSCARG_H
 #define _OFXOSCARG_H
 
-#include <ofConstants.h>
+#include "ofConstants.h"
 #include <string>
 
 typedef enum _ofxOscArgType
 {
 	OFXOSC_TYPE_NONE,
 	OFXOSC_TYPE_INT32,
+	OFXOSC_TYPE_INT64,
 	OFXOSC_TYPE_FLOAT,
 	OFXOSC_TYPE_STRING,
 	OFXOSC_TYPE_BLOB,
 	OFXOSC_TYPE_BUNDLE,
+	OFXOSC_TYPE_DOUBLE,
 	OFXOSC_TYPE_INDEXOUTOFBOUNDS
 } ofxOscArgType;
 
@@ -64,8 +73,8 @@ subclasses for each possible argument type
 */
 
 #if defined TARGET_WIN32 && defined _MSC_VER
-// required because MSVC isn't ANSI-C compliant
-typedef long int32_t;
+	// required because MSVC isn't ANSI-C compliant
+	typedef long int32_t;
 #endif
 
 class ofxOscArgInt32 : public ofxOscArg
@@ -87,6 +96,25 @@ private:
 	int32_t value;
 };
 
+class ofxOscArgInt64 : public ofxOscArg
+{
+public:
+	ofxOscArgInt64( uint64_t _value ) { value = _value; }
+	~ofxOscArgInt64() {};
+
+	/// return the type of this argument
+	ofxOscArgType getType() { return OFXOSC_TYPE_INT64; }
+	string getTypeName() { return "int64"; }
+
+	/// return value
+	uint64_t get() const { return value; }
+	/// set value
+	void set( uint64_t _value ) { value = _value; }
+
+private:
+	uint64_t value;
+};
+
 class ofxOscArgFloat : public ofxOscArg
 {
 public:
@@ -105,6 +133,26 @@ public:
 private:
 		float value;
 };
+
+class ofxOscArgDouble : public ofxOscArg
+{
+public:
+	ofxOscArgDouble( double _value ) { value = _value; }
+	~ofxOscArgDouble() {};
+	
+	/// return the type of this argument
+	ofxOscArgType getType() { return OFXOSC_TYPE_DOUBLE; }
+	string getTypeName() { return "double"; }
+	
+	/// return value
+	double get() const { return value; }
+	/// set value
+	void set( float _value ) { value = _value; }
+	
+private:
+	double value;
+};
+
 
 class ofxOscArgString : public ofxOscArg
 {
